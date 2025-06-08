@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, ArrowUpDown, Plus, Zap } from 'lucide-react';
+import { MoreHorizontal, ArrowUpDown, Plus, Zap, Activity, CheckCircle, AlertCircle, Clock, Eye, Edit, Trash2, Copy, Settings, Server, Search, ArrowLeft, ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '../../../components/ui/button';
@@ -36,6 +36,15 @@ import {
 } from '../../../components/ui/table';
 import { Badge } from '../../../components/ui/badge';
 import { SidebarToggle } from '../../../components/sidebar-toggle';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../components/ui/select';
+import { Card } from '../../../components/ui/card';
+import Link from 'next/link';
 
 // Mock data for deployments
 type Deployment = {
@@ -102,31 +111,48 @@ export default function DeploymentsPage() {
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Name
+            Deployments
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
-      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+            <Server className="h-4 w-4 text-purple-500" />
+          </div>
+          <div>
+            <div className="font-medium text-foreground">{row.getValue('name')}</div>
+            <div className="text-xs text-muted-foreground mt-0.5">ID: {row.original.id}</div>
+          </div>
+        </div>
+      ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
+        const getStatusConfig = (status: string) => {
+          switch (status) {
+            case 'active':
+              return { color: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300', icon: CheckCircle };
+            case 'deploying':
+              return { color: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300', icon: Activity };
+            case 'failed':
+              return { color: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300', icon: AlertCircle };
+            default:
+              return { color: 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300', icon: Clock };
+          }
+        };
+        
+        const config = getStatusConfig(status);
+        const Icon = config.icon;
+        
         return (
-          <Badge
-            variant={
-              status === 'active'
-                ? 'default'
-                : status === 'deploying'
-                ? 'secondary'
-                : status === 'failed'
-                ? 'destructive'
-                : 'outline'
-            }
-          >
-            {status}
+          <Badge className={`${config.color} font-medium`}>
+            <Icon className="h-3 w-3 mr-1" />
+            {status.charAt(0).toUpperCase() + status.slice(1)}
           </Badge>
         );
       },
@@ -134,11 +160,27 @@ export default function DeploymentsPage() {
     {
       accessorKey: 'model',
       header: 'Model',
-      cell: ({ row }) => <div className="text-muted-foreground">{row.getValue('model')}</div>,
+      cell: ({ row }) => (
+        <div>
+          <div className="font-medium">{row.getValue('model')}</div>
+          <div className="text-xs text-muted-foreground mt-0.5">Base model</div>
+        </div>
+      ),
     },
     {
       accessorKey: 'lastActive',
       header: 'Last Active',
+      cell: ({ row }) => <span className="text-sm">{row.getValue('lastActive')}</span>,
+    },
+    {
+      accessorKey: 'created',
+      header: 'Created on',
+      cell: ({ row }) => (
+        <div>
+          <div className="text-sm">{row.getValue('created')}</div>
+          <div className="text-xs text-muted-foreground">1:44 AM</div>
+        </div>
+      ),
     },
     {
       accessorKey: 'requests',
@@ -175,22 +217,35 @@ export default function DeploymentsPage() {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button 
+                variant="ghost" 
+                className="h-8 w-8 p-0 hover:bg-muted/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              >
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem className="cursor-pointer">
+                <Eye className="mr-2 h-4 w-4" />
+                View Details
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="cursor-pointer"
                 onClick={() => navigator.clipboard.writeText(deployment.endpoint)}
               >
-                Copy endpoint
+                <Copy className="mr-2 h-4 w-4" />
+                Copy Endpoint
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View details</DropdownMenuItem>
-              <DropdownMenuItem>View logs</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Delete deployment</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                View Logs
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Deployment
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -218,38 +273,91 @@ export default function DeploymentsPage() {
   });
 
   return (
-    <div className="flex flex-col h-full">
-      <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2">
+    <div className="flex flex-col h-full bg-gradient-to-br from-background via-background to-muted/20 font-sans">
+      <header className="flex sticky top-0 bg-background/95 backdrop-blur-sm py-1.5 items-center px-2 md:px-2 gap-2 border-b border-border/40">
         <SidebarToggle />
-        <h1 className="text-lg font-semibold">Deployments</h1>
-        <Button
-          className="ml-auto"
-          size="sm"
-          onClick={() => router.push('/deploy/new')}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          New Deployment
-        </Button>
+        <h1 className="text-lg font-semibold tracking-tight">Deployments</h1>
+        <Link href="/deploy/dashboard" className="hidden md:block order-4 md:ml-auto">
+          <Button variant="outline" className="flex items-center gap-2 text-sm py-1.5 h-8 px-4 rounded-lg border-border/40 hover:border-border transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </Link>
       </header>
-      <div className="flex-1 overflow-auto p-4">
-        <div className="flex items-center py-4">
-          <Input
-            placeholder="Filter deployments..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
-        </div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
+
+      <div className="flex-1 overflow-auto p-4 md:p-6 relative">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,_theme(colors.purple.500),transparent_50%)] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto relative">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight mb-2">Deployments</h1>
+              <p className="text-muted-foreground">Manage your model deployments on dedicated infrastructure.</p>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline"
+                className="font-medium"
+                onClick={() => router.push('/deploy/models')}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Model Library
+              </Button>
+              <Button 
+                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 font-medium"
+                onClick={() => router.push('/deploy/new')}
+              >
+                New Deployment
+              </Button>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search"
+                value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                onChange={(event) =>
+                  table.getColumn('name')?.setFilterValue(event.target.value)
+                }
+                className="pl-10"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="font-medium">
+                Active
+              </Button>
+              <Button variant="outline" size="sm" className="font-medium">
+                Inactive
+              </Button>
+            </div>
+            <div className="flex items-center gap-2 ml-auto">
+              <Select defaultValue="all">
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Status: All</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="deploying">Deploying</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Table */}
+          <Card className="border border-border/60 shadow-sm hover:shadow-md transition-shadow duration-200 bg-card/50 backdrop-blur-sm">
+            <Table>
+              <TableHeader className="bg-muted/30">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id} className="border-b border-border/60">
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id} className="font-semibold text-foreground/80 py-4">
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -257,64 +365,41 @@ export default function DeploymentsPage() {
                               header.getContext()
                             )}
                       </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No deployments found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                      className="group hover:bg-muted/50 transition-all duration-200 hover:shadow-sm border-b border-border/40"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="py-6 border-b border-border/40">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No deployments found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Card>
         </div>
       </div>
     </div>

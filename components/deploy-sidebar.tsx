@@ -29,7 +29,16 @@ import {
   ArrowLeft,
   PlusCircle,
   Brain,
-  MessageSquare
+  MessageSquare,
+  Zap,
+  MessageCircle,
+  HelpCircle,
+  Settings,
+  Users,
+  Shield,
+  Gauge,
+  Calendar,
+  Receipt
 } from 'lucide-react';
 import { RainbowButton } from '@/components/magicui/rainbow-button';
 
@@ -60,9 +69,40 @@ export function DeploySidebar({ user }: { user: User | undefined }) {
       icon: Brain,
     },
     {
+      name: 'Fine-Tuning',
+      href: '/deploy/fine-tuning',
+      icon: Zap,
+    },
+    {
       name: 'Analytics & Usage',
       href: '/deploy/analytics',
       icon: BarChart,
+    },
+  ];
+
+  const bottomNavItems = [
+    {
+      name: 'Discord',
+      href: '#',
+      icon: MessageCircle,
+    },
+    {
+      name: 'Docs',
+      href: '/deploy/docs',
+      icon: HelpCircle,
+    },
+  ];
+
+  const accountItems = [
+    {
+      name: 'Settings',
+      href: '/deploy/settings',
+      icon: Settings,
+    },
+    {
+      name: 'Users',
+      href: '/deploy/users',
+      icon: Users,
     },
     {
       name: 'API Keys',
@@ -70,14 +110,24 @@ export function DeploySidebar({ user }: { user: User | undefined }) {
       icon: Key,
     },
     {
-      name: 'Documentation',
-      href: '/deploy/docs',
-      icon: FileText,
+      name: 'Secrets',
+      href: '/deploy/secrets',
+      icon: Shield,
+    },
+    {
+      name: 'Quotas',
+      href: '/deploy/quotas',
+      icon: Gauge,
+    },
+    {
+      name: 'Reservations',
+      href: '/deploy/reservations',
+      icon: Calendar,
     },
     {
       name: 'Billing',
       href: '/deploy/billing',
-      icon: CreditCard,
+      icon: Receipt,
     },
   ];
 
@@ -129,9 +179,28 @@ export function DeploySidebar({ user }: { user: User | undefined }) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        
+        <div className="mt-auto">
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {bottomNavItems.map((item) => (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton asChild onClick={() => setOpenMobile(false)}>
+                      <Link href={item.href}>
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </div>
       </SidebarContent>
       <SidebarFooter className="border-t">
-        {user && <SidebarUserNav user={user} />}
+        {user && <SidebarUserNav user={user} accountItems={accountItems} />}
       </SidebarFooter>
     </Sidebar>
   );

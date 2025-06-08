@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronUp } from 'lucide-react';
+import { ChevronUp, Settings, Users, Key, Shield, Gauge, Calendar, Receipt } from 'lucide-react';
 import Image from 'next/image';
 import type { User } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
@@ -22,8 +22,15 @@ import { useRouter } from 'next/navigation';
 import { toast } from './toast';
 import { LoaderIcon } from './icons';
 import { guestRegex } from '@/lib/constants';
+import Link from 'next/link';
 
-export function SidebarUserNav({ user }: { user: User }) {
+interface AccountItem {
+  name: string;
+  href: string;
+  icon: any;
+}
+
+export function SidebarUserNav({ user, accountItems }: { user: User; accountItems?: AccountItem[] }) {
   const router = useRouter();
   const { data, status } = useSession();
   const { setTheme, resolvedTheme } = useTheme();
@@ -71,18 +78,15 @@ export function SidebarUserNav({ user }: { user: User }) {
             side="top"
             className="w-[--radix-popper-anchor-width]"
           >
-            <DropdownMenuItem
-              data-testid="user-nav-item-theme"
-              className="cursor-pointer"
-              onSelect={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-            >
-              {`Toggle ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
-            </DropdownMenuItem>
+            <div className="px-2 py-1.5 text-sm font-medium text-muted-foreground">
+              {user.email}
+            </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild data-testid="user-nav-item-auth">
+            
+            <div className="px-2 py-1.5">
               <button
                 type="button"
-                className="w-full cursor-pointer"
+                className="w-full bg-black text-white rounded-md py-1.5 px-3 text-sm font-medium"
                 onClick={() => {
                   if (status === 'loading') {
                     toast({
@@ -90,10 +94,8 @@ export function SidebarUserNav({ user }: { user: User }) {
                       description:
                         'Checking authentication status, please try again!',
                     });
-
                     return;
                   }
-
                   if (isGuest) {
                     router.push('/login');
                   } else {
@@ -105,6 +107,52 @@ export function SidebarUserNav({ user }: { user: User }) {
               >
                 {isGuest ? 'Login to your account' : 'Sign out'}
               </button>
+            </div>
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem asChild>
+              <Link href="/" className="cursor-pointer">
+                Home
+              </Link>
+            </DropdownMenuItem>
+            
+            <DropdownMenuSeparator />
+            
+            <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              ACCOUNT
+            </div>
+            
+            {accountItems && accountItems.map((item) => (
+              <DropdownMenuItem key={item.href} asChild>
+                <Link href={item.href} className="cursor-pointer flex items-center gap-2">
+                  <item.icon className="w-4 h-4" />
+                  {item.name}
+                </Link>
+              </DropdownMenuItem>
+            ))}
+            
+            <DropdownMenuSeparator />
+            
+            <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              ABOUT
+            </div>
+            
+            <DropdownMenuItem asChild>
+              <Link href="#" className="cursor-pointer">
+                Pricing
+              </Link>
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem asChild>
+              <Link href="#" className="cursor-pointer">
+                Blog
+              </Link>
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem asChild>
+              <Link href="#" className="cursor-pointer">
+                Contact Us
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
