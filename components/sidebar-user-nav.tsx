@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronUp, Settings, Users, Key, Shield, Gauge, Calendar, Receipt } from 'lucide-react';
+import { ChevronUp, Settings, Users, Key, Shield, Gauge, Calendar, Receipt, Moon, Sun } from 'lucide-react';
 import Image from 'next/image';
 import type { User } from 'next-auth';
 import { signOut, useSession } from 'next-auth/react';
@@ -153,6 +153,19 @@ export function SidebarUserNav({ user, accountItems }: { user: User; accountItem
               <Link href="#" className="cursor-pointer">
                 Contact Us
               </Link>
+            </DropdownMenuItem>
+            
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem
+              data-testid="user-nav-item-theme"
+              className="cursor-pointer"
+              onSelect={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            >
+              <div className="flex items-center gap-2">
+                {resolvedTheme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
