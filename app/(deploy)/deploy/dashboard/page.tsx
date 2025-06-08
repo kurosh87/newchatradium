@@ -279,7 +279,7 @@ export default function DeployDashboardPage() {
         <div className="flex-1 overflow-auto p-4 md:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-32 bg-muted rounded-xl animate-pulse" />
+              <div key={i} className="h-32 bg-gradient-to-r from-muted via-muted/50 to-muted rounded-xl animate-pulse" />
             ))}
           </div>
         </div>
@@ -335,13 +335,12 @@ export default function DeployDashboardPage() {
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  <Button 
-                    variant="default"
-                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 font-medium"
+                  <RainbowButton 
+                    className="px-6 h-9 font-semibold"
                     onClick={() => router.push('/deploy/new')}
                   >
                     Start building
-                  </Button>
+                  </RainbowButton>
                 </div>
               </div>
             </CardContent>
@@ -352,7 +351,7 @@ export default function DeployDashboardPage() {
             {quickActions.map((action, index) => (
               <Card 
                 key={index} 
-                className="cursor-pointer hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 border border-border/60 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm"
+                className="cursor-pointer hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] border border-border/60 bg-white/90 dark:bg-gray-950/90 backdrop-blur-sm group"
                 onClick={() => router.push(action.href)}
               >
                 <CardContent className="p-4">
@@ -391,7 +390,7 @@ export default function DeployDashboardPage() {
                       <div className="flex gap-2">
                         <Button 
                           size="sm" 
-                          className="bg-green-600 hover:bg-green-700 text-white font-medium"
+                          className="bg-green-600 hover:bg-green-700 text-white font-semibold"
                           onClick={() => router.push('/deploy/billing')}
                         >
                           Set payment
@@ -564,8 +563,8 @@ export default function DeployDashboardPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight">Explore Models</h2>
-                <p className="text-muted-foreground font-medium">Deploy state-of-the-art AI models on dedicated GPU infrastructure</p>
+                <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">Explore Models</h2>
+                <p className="text-muted-foreground font-medium text-lg">Deploy state-of-the-art AI models on dedicated GPU infrastructure</p>
               </div>
               <Button variant="outline" onClick={() => router.push('/deploy/models')} className="gap-2 font-semibold">
                 <Brain className="h-4 w-4" />
@@ -577,7 +576,7 @@ export default function DeployDashboardPage() {
               {modelLibrary.map((model) => (
                 <Card 
                   key={model.id} 
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border border-border/60 bg-white/90 dark:bg-gray-950/90 backdrop-blur-sm group overflow-hidden"
+                  className="cursor-pointer hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] border border-border/60 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm group overflow-hidden hover:border-primary/30"
                   onClick={() => router.push(`/deploy/new?model=${model.id}`)}
                 >
                   <CardContent className="p-0">
@@ -665,9 +664,9 @@ export default function DeployDashboardPage() {
                             <span className="font-medium">{model.deployments}</span>
                           </div>
                         </div>
-                        <Button size="sm" className="h-7 text-xs font-medium bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100">
+                        <RainbowButton size="sm" className="h-7 text-xs font-semibold">
                           Deploy
-                        </Button>
+                        </RainbowButton>
                       </div>
                     </div>
                   </CardContent>

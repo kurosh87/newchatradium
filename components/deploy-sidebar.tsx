@@ -38,7 +38,8 @@ import {
   Shield,
   Gauge,
   Calendar,
-  Receipt
+  Receipt,
+  Database
 } from 'lucide-react';
 import { RainbowButton } from '@/components/magicui/rainbow-button';
 
@@ -69,6 +70,11 @@ export function DeploySidebar({ user }: { user: User | undefined }) {
       icon: Brain,
     },
     {
+      name: 'Datasets',
+      href: '/deploy/datasets',
+      icon: Database,
+    },
+    {
       name: 'Fine-Tuning',
       href: '/deploy/fine-tuning',
       icon: Zap,
@@ -82,7 +88,7 @@ export function DeploySidebar({ user }: { user: User | undefined }) {
 
   const bottomNavItems = [
     {
-      name: 'Discord',
+      name: 'Slack',
       href: '#',
       icon: MessageCircle,
     },

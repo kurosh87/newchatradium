@@ -65,16 +65,9 @@ function PureChatHeader({
         />
       )}
 
-      {!isReadonly && (
-        <VisibilitySelector
-          chatId={chatId}
-          selectedVisibilityType={selectedVisibilityType}
-          className="order-1 md:order-3"
-        />
-      )}
 
       <Link 
-        href="/deploy" 
+        href="/deploy/dashboard" 
         className="hidden md:block order-4 md:ml-auto"
       >
         <RainbowButton variant="outline" className="py-1.5 px-2 h-fit md:h-[34px] rounded-lg">

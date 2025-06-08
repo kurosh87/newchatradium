@@ -1,26 +1,18 @@
 'use client';
 
+import { useState } from 'react';
+import { TrendingUp, TrendingDown, ArrowLeft, Activity, Clock, DollarSign, Zap } from 'lucide-react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis, LineChart, Line } from 'recharts';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
-} from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import { SidebarToggle } from '@/components/sidebar-toggle';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Download } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -28,194 +20,549 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Link from 'next/link';
 
-// Mock data for charts
-const requestsData = [
-  { name: 'Mon', requests: 4000 },
-  { name: 'Tue', requests: 3000 },
-  { name: 'Wed', requests: 2000 },
-  { name: 'Thu', requests: 2780 },
-  { name: 'Fri', requests: 1890 },
-  { name: 'Sat', requests: 2390 },
-  { name: 'Sun', requests: 3490 },
+// Chart data matching the Together AI dashboard
+const requestsChartData = [
+  { time: '7:11 PM', successes: 0, errors: 0 },
+  { time: '8:3 AM', successes: 0, errors: 0 },
+  { time: '8:7 AM', successes: 0, errors: 0 },
+  { time: '8:11 AM', successes: 0, errors: 0 },
+  { time: '8:3 PM', successes: 0, errors: 0 },
+  { time: '8:7 PM', successes: 0, errors: 0 },
+  { time: '8:11 PM', successes: 0, errors: 0 },
 ];
 
-const modelUsageData = [
-  { name: 'DeepSeek-R1', value: 45, color: '#8b5cf6' },
-  { name: 'Qwen3-30B', value: 30, color: '#ec4899' },
-  { name: 'Qwen3-14B', value: 15, color: '#3b82f6' },
-  { name: 'Others', value: 10, color: '#6b7280' },
+const tokensChartData = [
+  { time: '7:11 PM', tokens: 0 },
+  { time: '8:3 AM', tokens: 0 },
+  { time: '8:7 AM', tokens: 0 },
+  { time: '8:11 AM', tokens: 0 },
+  { time: '8:3 PM', tokens: 0 },
+  { time: '8:7 PM', tokens: 0 },
+  { time: '8:11 PM', tokens: 0 },
 ];
 
-const costData = [
-  { month: 'Jan', cost: 1200 },
-  { month: 'Feb', cost: 1450 },
-  { month: 'Mar', cost: 1680 },
-  { month: 'Apr', cost: 1890 },
-  { month: 'May', cost: 2100 },
-  { month: 'Jun', cost: 2400 },
+const latencyChartData = [
+  { time: '7:11 PM', latency: 0 },
+  { time: '8:3 AM', latency: 0 },
+  { time: '8:7 AM', latency: 0 },
+  { time: '8:11 AM', latency: 0 },
+  { time: '8:3 PM', latency: 0 },
+  { time: '8:7 PM', latency: 0 },
+  { time: '8:11 PM', latency: 0 },
 ];
 
-const latencyData = [
-  { time: '00:00', p50: 120, p95: 180, p99: 250 },
-  { time: '04:00', p50: 110, p95: 170, p99: 240 },
-  { time: '08:00', p50: 130, p95: 190, p99: 280 },
-  { time: '12:00', p50: 140, p95: 200, p99: 290 },
-  { time: '16:00', p50: 135, p95: 195, p99: 285 },
-  { time: '20:00', p50: 125, p95: 185, p99: 260 },
+const ttftChartData = [
+  { time: '7:11 PM', ttft: 0 },
+  { time: '8:3 AM', ttft: 0 },
+  { time: '8:7 AM', ttft: 0 },
+  { time: '8:11 AM', ttft: 0 },
+  { time: '8:3 PM', ttft: 0 },
+  { time: '8:7 PM', ttft: 0 },
+  { time: '8:11 PM', ttft: 0 },
 ];
+
+const requestsChartConfig = {
+  successes: {
+    label: 'Successes',
+    color: 'hsl(var(--chart-1))',
+  },
+  errors: {
+    label: 'Errors',
+    color: 'hsl(var(--chart-2))',
+  },
+} satisfies ChartConfig;
+
+const tokensChartConfig = {
+  tokens: {
+    label: 'Tokens',
+    color: 'hsl(var(--chart-3))',
+  },
+} satisfies ChartConfig;
+
+const latencyChartConfig = {
+  latency: {
+    label: 'Latency',
+    color: 'hsl(var(--chart-4))',
+  },
+} satisfies ChartConfig;
+
+const ttftChartConfig = {
+  ttft: {
+    label: 'TTFT',
+    color: 'hsl(var(--chart-5))',
+  },
+} satisfies ChartConfig;
 
 export default function AnalyticsPage() {
+  const [timeInterval, setTimeInterval] = useState('24');
+  const [timeUnit, setTimeUnit] = useState('Hours');
+  const [activeTab, setActiveTab] = useState('analytics');
+
   return (
-    <div className="flex flex-col h-full">
-      <header className="flex sticky top-0 bg-background py-1.5 items-center px-2 md:px-2 gap-2 border-b">
+    <div className="flex flex-col h-full bg-gradient-to-br from-background via-background to-muted/20 font-sans">
+      <header className="flex sticky top-0 bg-background/95 backdrop-blur-sm py-1.5 items-center px-2 md:px-2 gap-2 border-b border-border/40">
         <SidebarToggle />
-        <h1 className="text-lg font-semibold">Analytics & Usage</h1>
-        <div className="ml-auto flex items-center gap-2">
-          <Select defaultValue="7d">
-            <SelectTrigger className="w-[180px]">
-              <CalendarDays className="h-4 w-4 mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="24h">Last 24 hours</SelectItem>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export
+        <h1 className="text-lg font-semibold tracking-tight">Analytics Dashboard</h1>
+        <Link href="/deploy/dashboard" className="hidden md:block order-4 md:ml-auto">
+          <Button variant="outline" className="flex items-center gap-2 text-sm py-1.5 h-8 px-4 rounded-lg border-border/40 hover:border-border transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
           </Button>
-        </div>
+        </Link>
       </header>
-      
-      <div className="flex-1 overflow-auto p-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">45,231</div>
-              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Deployments</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">+2 from last month</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Latency</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">132ms</div>
-              <p className="text-xs text-muted-foreground">-5.2% from last month</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Cost</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$2,400</div>
-              <p className="text-xs text-muted-foreground">+14.3% from last month</p>
-            </CardContent>
-          </Card>
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-          <Card className="col-span-4">
-            <CardHeader>
-              <CardTitle>Requests Over Time</CardTitle>
-              <CardDescription>Daily request count for the last 7 days</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={requestsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="requests" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card className="col-span-3">
-            <CardHeader>
-              <CardTitle>Model Usage Distribution</CardTitle>
-              <CardDescription>Percentage of requests by model</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={modelUsageData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {modelUsageData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="flex-1 overflow-auto p-4 md:p-6 relative">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,_theme(colors.purple.500),transparent_50%)] pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto relative">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight mb-2">Analytics Dashboard</h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Time Interval</span>
+                <Select value={timeInterval} onValueChange={setTimeInterval}>
+                  <SelectTrigger className="w-16">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="24">24</SelectItem>
+                    <SelectItem value="12">12</SelectItem>
+                    <SelectItem value="6">6</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={timeUnit} onValueChange={setTimeUnit}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Hours">Hours</SelectItem>
+                    <SelectItem value="Days">Days</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
 
-        <div className="grid gap-4 md:grid-cols-2 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Monthly Cost Trend</CardTitle>
-              <CardDescription>Total cost over the last 6 months</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={costData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `$${value}`} />
-                  <Bar dataKey="cost" fill="#ec4899" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Response Latency</CardTitle>
-              <CardDescription>P50, P95, and P99 latencies throughout the day</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={latencyData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="time" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => `${value}ms`} />
-                  <Legend />
-                  <Line type="monotone" dataKey="p50" stroke="#10b981" name="P50" />
-                  <Line type="monotone" dataKey="p95" stroke="#f59e0b" name="P95" />
-                  <Line type="monotone" dataKey="p99" stroke="#ef4444" name="P99" />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="analytics" className="bg-blue-500 text-white data-[state=active]:bg-blue-600">
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="monthly" className="text-muted-foreground">
+                Monthly Reserved Endpoints
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="analytics" className="space-y-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Requests Chart */}
+              <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">REQUESTS</CardTitle>
+                      <div className="text-sm text-muted-foreground mt-1">Total requests & errors</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <span>0</span>
+                          <span className="text-muted-foreground">Successes</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>0</span>
+                          <span className="text-muted-foreground">Errors</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>-%</span>
+                          <span className="text-muted-foreground">Success rate</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer config={requestsChartConfig}>
+                    <AreaChart
+                      accessibilityLayer
+                      data={requestsChartData}
+                      margin={{
+                        left: 12,
+                        right: 12,
+                        top: 12,
+                        bottom: 12,
+                      }}
+                      height={200}
+                    >
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis
+                        dataKey="time"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fontSize: 12 }}
+                        domain={[0, 4]}
+                        ticks={[1, 2, 3, 4]}
+                      />
+                      <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                      <defs>
+                        <linearGradient id="fillSuccesses" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-successes)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-successes)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                        <linearGradient id="fillErrors" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-errors)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-errors)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <Area
+                        dataKey="errors"
+                        type="natural"
+                        fill="url(#fillErrors)"
+                        fillOpacity={0.4}
+                        stroke="var(--color-errors)"
+                        stackId="a"
+                      />
+                      <Area
+                        dataKey="successes"
+                        type="natural"
+                        fill="url(#fillSuccesses)"
+                        fillOpacity={0.4}
+                        stroke="var(--color-successes)"
+                        stackId="a"
+                      />
+                    </AreaChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+
+              {/* TPM Chart */}
+              <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">TPM</CardTitle>
+                      <div className="text-sm text-muted-foreground mt-1">Tokens per minute</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <span>0</span>
+                          <span className="text-muted-foreground">Average</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>0</span>
+                          <span className="text-muted-foreground">P95</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>0</span>
+                          <span className="text-muted-foreground">P99</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer config={tokensChartConfig}>
+                    <AreaChart
+                      accessibilityLayer
+                      data={tokensChartData}
+                      margin={{
+                        left: 12,
+                        right: 12,
+                        top: 12,
+                        bottom: 12,
+                      }}
+                      height={200}
+                    >
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis
+                        dataKey="time"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fontSize: 12 }}
+                        domain={[0, 4]}
+                        ticks={[1, 2, 3, 4]}
+                      />
+                      <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                      <defs>
+                        <linearGradient id="fillTokens" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-tokens)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-tokens)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <Area
+                        dataKey="tokens"
+                        type="natural"
+                        fill="url(#fillTokens)"
+                        fillOpacity={0.4}
+                        stroke="var(--color-tokens)"
+                      />
+                    </AreaChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+
+              {/* Latency Chart */}
+              <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">LATENCY (SERVER-SIDE)</CardTitle>
+                      <div className="text-sm text-muted-foreground mt-1">Avg latency in seconds</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <span>0S</span>
+                          <span className="text-muted-foreground">Average</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>0S</span>
+                          <span className="text-muted-foreground">P95</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>0S</span>
+                          <span className="text-muted-foreground">P99</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer config={latencyChartConfig}>
+                    <AreaChart
+                      accessibilityLayer
+                      data={latencyChartData}
+                      margin={{
+                        left: 12,
+                        right: 12,
+                        top: 12,
+                        bottom: 12,
+                      }}
+                      height={200}
+                    >
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis
+                        dataKey="time"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fontSize: 12 }}
+                        domain={[0, 4]}
+                        ticks={[1, 2, 3, 4]}
+                      />
+                      <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                      <defs>
+                        <linearGradient id="fillLatency" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-latency)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-latency)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <Area
+                        dataKey="latency"
+                        type="natural"
+                        fill="url(#fillLatency)"
+                        fillOpacity={0.4}
+                        stroke="var(--color-latency)"
+                      />
+                    </AreaChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+
+              {/* TTFT Chart */}
+              <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">TTFT (SERVER-SIDE)</CardTitle>
+                      <div className="text-sm text-muted-foreground mt-1">Avg time to first token</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <span>0S</span>
+                          <span className="text-muted-foreground">p50</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>0S</span>
+                          <span className="text-muted-foreground">P95</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>0S</span>
+                          <span className="text-muted-foreground">P99</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer config={ttftChartConfig}>
+                    <AreaChart
+                      accessibilityLayer
+                      data={ttftChartData}
+                      margin={{
+                        left: 12,
+                        right: 12,
+                        top: 12,
+                        bottom: 12,
+                      }}
+                      height={200}
+                    >
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis
+                        dataKey="time"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fontSize: 12 }}
+                        domain={[0, 4]}
+                        ticks={[1, 2, 3, 4]}
+                      />
+                      <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                      <defs>
+                        <linearGradient id="fillTtft" x1="0" y1="0" x2="0" y2="1">
+                          <stop
+                            offset="5%"
+                            stopColor="var(--color-ttft)"
+                            stopOpacity={0.8}
+                          />
+                          <stop
+                            offset="95%"
+                            stopColor="var(--color-ttft)"
+                            stopOpacity={0.1}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <Area
+                        dataKey="ttft"
+                        type="natural"
+                        fill="url(#fillTtft)"
+                        fillOpacity={0.4}
+                        stroke="var(--color-ttft)"
+                      />
+                    </AreaChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Bottom Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Models Card */}
+              <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">MODELS</CardTitle>
+                      <div className="text-sm text-muted-foreground mt-1">Successful requests per model</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 text-sm">
+                        <span>0</span>
+                        <span className="text-muted-foreground">Total</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-32 flex items-center justify-center text-muted-foreground">
+                    No model data available
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Errors Card */}
+              <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">ERRORS</CardTitle>
+                      <div className="text-sm text-muted-foreground mt-1">Total errors by error code</div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-32 flex items-center justify-center text-muted-foreground">
+                    No error data available
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+            <TabsContent value="monthly">
+              <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="h-64 flex items-center justify-center text-muted-foreground">
+                    Monthly Reserved Endpoints data would go here
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

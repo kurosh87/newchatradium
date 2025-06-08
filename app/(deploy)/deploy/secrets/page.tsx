@@ -13,12 +13,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Card } from '@/components/ui/card';
+import { ArrowLeft, Search, Shield, MoreHorizontal, Eye, EyeOff, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SidebarToggle } from '@/components/sidebar-toggle';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Card } from '@/components/ui/card';
+import { SidebarToggle } from '@/components/sidebar-toggle';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -28,199 +37,119 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Copy, Key, MoreHorizontal, Plus, Eye, EyeOff, ArrowLeft, Search } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
-type ApiKey = {
+type Secret = {
   id: string;
   name: string;
-  key: string;
+  environment: string;
   created: string;
   lastUsed: string;
-  usage: number;
-  status: 'active' | 'revoked';
+  value: string;
 };
 
-const data: ApiKey[] = [
+const data: Secret[] = [
   {
     id: '1',
-    name: 'Production API Key',
-    key: 'sk-prod-1234567890abcdef',
+    name: 'DATABASE_URL',
+    environment: 'Production',
     created: '2024-01-15',
     lastUsed: '2 hours ago',
-    usage: 125420,
-    status: 'active',
+    value: 'postgresql://user:password@localhost:5432/db',
   },
   {
     id: '2',
-    name: 'Development API Key',
-    key: 'sk-dev-abcdef1234567890',
+    name: 'API_SECRET_KEY',
+    environment: 'Development',
     created: '2024-01-10',
     lastUsed: '1 day ago',
-    usage: 5420,
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'Testing API Key',
-    key: 'sk-test-fedcba0987654321',
-    created: '2024-01-05',
-    lastUsed: 'Never',
-    usage: 0,
-    status: 'revoked',
+    value: 'sk-1234567890abcdef',
   },
 ];
 
-export default function ApiKeysPage() {
+export default function SecretsPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [newKeyName, setNewKeyName] = useState('');
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>(data);
+  const [visibleSecrets, setVisibleSecrets] = useState<Set<string>>(new Set());
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newSecretName, setNewSecretName] = useState('');
+  const [newSecretValue, setNewSecretValue] = useState('');
 
-  const toggleKeyVisibility = (keyId: string) => {
-    setShowKeys(prev => ({ ...prev, [keyId]: !prev[keyId] }));
+  const toggleSecretVisibility = (secretId: string) => {
+    const newSet = new Set(visibleSecrets);
+    if (newSet.has(secretId)) {
+      newSet.delete(secretId);
+    } else {
+      newSet.add(secretId);
+    }
+    setVisibleSecrets(newSet);
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: 'Copied to clipboard',
-      description: 'API key has been copied to your clipboard.',
-    });
+  const handleCreateSecret = () => {
+    // Handle create secret logic here
+    setIsCreateOpen(false);
+    setNewSecretName('');
+    setNewSecretValue('');
   };
 
-  const createNewKey = () => {
-    if (!newKeyName) return;
-    
-    const newKey: ApiKey = {
-      id: Date.now().toString(),
-      name: newKeyName,
-      key: `sk-${Math.random().toString(36).substring(2, 15)}`,
-      created: new Date().toISOString().split('T')[0],
-      lastUsed: 'Never',
-      usage: 0,
-      status: 'active',
-    };
-    
-    setApiKeys(prev => [newKey, ...prev]);
-    setNewKeyName('');
-    setIsCreateDialogOpen(false);
-    
-    toast({
-      title: 'API key created',
-      description: 'Your new API key has been created successfully.',
-    });
-  };
-
-  const revokeKey = (keyId: string) => {
-    setApiKeys(prev => prev.map(key => 
-      key.id === keyId ? { ...key, status: 'revoked' as const } : key
-    ));
-    
-    toast({
-      title: 'API key revoked',
-      description: 'The API key has been revoked and can no longer be used.',
-    });
-  };
-
-  const columns: ColumnDef<ApiKey>[] = [
+  const columns: ColumnDef<Secret>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-            <Key className="h-4 w-4 text-blue-500" />
+          <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+            <Shield className="h-4 w-4 text-green-500" />
           </div>
           <div>
             <div className="font-medium text-foreground">{row.getValue('name')}</div>
-            <div className="text-xs text-muted-foreground">{row.original.created}</div>
+            <div className="text-xs text-muted-foreground">{row.original.environment}</div>
           </div>
         </div>
       ),
     },
     {
-      accessorKey: 'key',
-      header: 'Key',
+      accessorKey: 'value',
+      header: 'Value',
       cell: ({ row }) => {
-        const isVisible = showKeys[row.original.id];
+        const isVisible = visibleSecrets.has(row.original.id);
         return (
           <div className="flex items-center gap-2">
-            <code className="text-sm font-mono">
-              {isVisible 
-                ? row.original.key 
-                : `${row.original.key.substring(0, 7)}${'•'.repeat(20)}`}
-            </code>
+            <span className="font-mono text-sm">
+              {isVisible ? row.original.value : '••••••••••••'}
+            </span>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => toggleKeyVisibility(row.original.id)}
+              onClick={() => toggleSecretVisibility(row.original.id)}
               className="h-6 w-6 p-0"
             >
               {isVisible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => copyToClipboard(row.original.key)}
-              className="h-6 w-6 p-0"
-            >
-              <Copy className="h-3 w-3" />
             </Button>
           </div>
         );
       },
     },
     {
+      accessorKey: 'created',
+      header: 'Created',
+      cell: ({ row }) => (
+        <span className="text-sm">{row.getValue('created')}</span>
+      ),
+    },
+    {
       accessorKey: 'lastUsed',
       header: 'Last Used',
       cell: ({ row }) => (
-        <span className="text-sm">{row.getValue('lastUsed')}</span>
+        <span className="text-sm text-muted-foreground">{row.getValue('lastUsed')}</span>
       ),
-    },
-    {
-      accessorKey: 'usage',
-      header: 'Usage',
-      cell: ({ row }) => (
-        <span className="text-sm font-medium">{(row.getValue('usage') as number).toLocaleString()}</span>
-      ),
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => {
-        const status = row.getValue('status') as string;
-        return (
-          <Badge 
-            variant={status === 'active' ? 'default' : 'secondary'}
-            className={
-              status === 'active' 
-                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
-                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-            }
-          >
-            {status}
-          </Badge>
-        );
-      },
     },
     {
       id: 'actions',
@@ -232,21 +161,10 @@ export default function ApiKeysPage() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem
-              onClick={() => copyToClipboard(row.original.key)}
-              className="cursor-pointer"
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              Copy key
+            <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
             </DropdownMenuItem>
-            {row.original.status === 'active' && (
-              <DropdownMenuItem
-                className="cursor-pointer text-red-600 dark:text-red-400"
-                onClick={() => revokeKey(row.original.id)}
-              >
-                Revoke key
-              </DropdownMenuItem>
-            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -254,7 +172,7 @@ export default function ApiKeysPage() {
   ];
 
   const table = useReactTable({
-    data: apiKeys,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -276,7 +194,7 @@ export default function ApiKeysPage() {
     <div className="flex flex-col h-full bg-gradient-to-br from-background via-background to-muted/20 font-sans">
       <header className="flex sticky top-0 bg-background/95 backdrop-blur-sm py-1.5 items-center px-2 md:px-2 gap-2 border-b border-border/40">
         <SidebarToggle />
-        <h1 className="text-lg font-semibold tracking-tight">API Keys</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Secrets</h1>
         <Link href="/deploy/dashboard" className="hidden md:block order-4 md:ml-auto">
           <Button variant="outline" className="flex items-center gap-2 text-sm py-1.5 h-8 px-4 rounded-lg border-border/40 hover:border-border transition-colors">
             <ArrowLeft className="h-4 w-4" />
@@ -293,40 +211,50 @@ export default function ApiKeysPage() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight mb-2">API Keys</h1>
-              <p className="text-muted-foreground">Manage API keys for accessing your deployments programmatically</p>
+              <h1 className="text-2xl font-semibold tracking-tight mb-2">Secrets</h1>
+              <p className="text-muted-foreground">Securely store and manage environment variables and sensitive data</p>
             </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 font-medium">
                   <Plus className="h-4 w-4 mr-2" />
-                  Create API Key
+                  Create Secret
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                  <DialogTitle>Create New API Key</DialogTitle>
+                  <DialogTitle>Create Secret</DialogTitle>
                   <DialogDescription>
-                    Create a new API key for accessing your deployments.
+                    Add a new secret to securely store sensitive data.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="mt-4 space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Key Name*</Label>
+                    <Label htmlFor="secret-name">Name*</Label>
                     <Input
-                      id="name"
-                      placeholder="e.g., Production API Key"
-                      value={newKeyName}
-                      onChange={(e) => setNewKeyName(e.target.value)}
+                      id="secret-name"
+                      placeholder="e.g., DATABASE_URL"
+                      value={newSecretName}
+                      onChange={(e) => setNewSecretName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="secret-value">Value*</Label>
+                    <Input
+                      id="secret-value"
+                      type="password"
+                      placeholder="Enter secret value"
+                      value={newSecretValue}
+                      onChange={(e) => setNewSecretValue(e.target.value)}
                     />
                   </div>
                   <div className="flex justify-end pt-4">
                     <Button 
-                      onClick={createNewKey}
-                      disabled={!newKeyName}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={handleCreateSecret}
+                      disabled={!newSecretName || !newSecretValue}
+                      className="bg-green-600 hover:bg-green-700 text-white"
                     >
-                      Create Key
+                      Create Secret
                     </Button>
                   </div>
                 </div>
@@ -339,7 +267,7 @@ export default function ApiKeysPage() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search API keys..."
+                placeholder="Search secrets..."
                 value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
                 onChange={(event) =>
                   table.getColumn('name')?.setFilterValue(event.target.value)
@@ -386,7 +314,7 @@ export default function ApiKeysPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={columns.length} className="h-24 text-center">
-                      No API keys found.
+                      No secrets found.
                     </TableCell>
                   </TableRow>
                 )}
@@ -418,26 +346,6 @@ export default function ApiKeysPage() {
               </Button>
             </div>
           </div>
-
-          {/* Usage Instructions */}
-          <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm mt-6">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-2">Using API Keys</h3>
-              <p className="text-muted-foreground mb-4">
-                Include your API key in the Authorization header of your requests.
-              </p>
-              <div className="rounded-lg bg-muted/50 p-4">
-                <pre className="text-sm overflow-x-auto">
-                  <code className="text-muted-foreground">
-{`curl https://api.radium.ai/v1/models/your-model-id \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{"prompt": "Hello, world!"}'`}
-                  </code>
-                </pre>
-              </div>
-            </div>
-          </Card>
         </div>
       </div>
     </div>
