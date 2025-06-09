@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { PaymentForm } from '@/components/billing/payment-form';
-import { BillingSummary } from '@/components/billing/billing-summary';
+// import { PaymentForm } from '@/components/billing/payment-form';
+// import { BillingSummary } from '@/components/billing/billing-summary';
 
 // Mock user data - in real app, this would come from authentication context
 const mockUser = {
@@ -76,18 +76,17 @@ export default function BillingPage() {
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
-              <BillingSummary 
-                userEmail={mockUser.email}
-                customerId={undefined}
-              />
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Billing overview will be displayed here.</p>
+                <p className="text-sm text-muted-foreground mt-2">This section is currently in development.</p>
+              </div>
             </TabsContent>
 
             <TabsContent value="payment" className="space-y-6">
-              <PaymentForm 
-                userEmail={mockUser.email}
-                userName={mockUser.name}
-                userId={mockUser.id}
-              />
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Payment form will be displayed here.</p>
+                <p className="text-sm text-muted-foreground mt-2">This section is currently in development.</p>
+              </div>
             </TabsContent>
 
             <TabsContent value="spending" className="space-y-6">
