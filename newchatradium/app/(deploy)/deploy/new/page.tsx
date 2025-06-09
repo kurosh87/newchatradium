@@ -350,7 +350,7 @@ export default function NewDeploymentPage() {
             <div className="space-y-2">
               <Button
                 variant="outline"
-                className="w-full justify-between h-auto p-4"
+                className="w-full justify-between h-auto p-4 md:p-6"
                 disabled
               >
                 <div className="text-left">
@@ -434,7 +434,7 @@ export default function NewDeploymentPage() {
             <div className="space-y-2">
               <Button
                 variant="outline"
-                className="w-full justify-between h-auto p-4"
+                className="w-full justify-between h-auto p-4 md:p-6"
                 disabled
               >
                 <div className="text-left">
@@ -659,7 +659,7 @@ export default function NewDeploymentPage() {
       </header>
 
       <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6 max-w-7xl mx-auto relative">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6 max-w-7xl mx-auto relative">
           {/* Subtle background pattern */}
           <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,_theme(colors.purple.500),transparent_50%)] pointer-events-none" />
           
@@ -672,7 +672,7 @@ export default function NewDeploymentPage() {
             </div>
 
             {/* Step Navigation */}
-            <div className="space-y-8 relative">
+            <div className="space-y-6 relative">
               {/* Connecting Lines */}
               <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-gradient-to-b from-purple-200 via-purple-300 to-purple-200 dark:from-purple-800 dark:via-purple-700 dark:to-purple-800" />
               

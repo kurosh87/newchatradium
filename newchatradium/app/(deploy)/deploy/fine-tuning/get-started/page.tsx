@@ -54,7 +54,7 @@ export default function FineTuningGetStartedPage() {
       <div className="flex-1 overflow-auto p-4 md:p-6 relative">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_25%_25%,_theme(colors.purple.500),transparent_50%)] pointer-events-none" />
-        <div className="max-w-6xl mx-auto space-y-8 relative">
+        <div className="max-w-6xl mx-auto space-y-6 relative">
           {/* Hero Section */}
           <div className="text-center space-y-4">
             <h1 className="text-3xl font-bold tracking-tight">Getting Started with Fine-Tuning</h1>
@@ -67,7 +67,7 @@ export default function FineTuningGetStartedPage() {
           <div className="space-y-6">
             <h2 className="text-2xl font-semibold text-center">How Fine-Tuning Works</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               <Card className="border border-border/60 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 bg-card/80 backdrop-blur-sm">
                 <CardHeader className="text-center">
                   <div className="mx-auto mb-4 p-3 rounded-lg bg-purple-100 dark:bg-purple-900/30 w-fit">
@@ -132,7 +132,7 @@ export default function FineTuningGetStartedPage() {
               <CardTitle className="text-xl">Key Benefits of Fine-Tuning</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div className="space-y-3">
                   <h4 className="font-semibold">📈 Improved Performance</h4>
                   <p className="text-sm text-muted-foreground">
@@ -167,7 +167,7 @@ export default function FineTuningGetStartedPage() {
               <CardTitle className="text-xl">Dataset Requirements</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <h4 className="font-semibold mb-3">Format Requirements</h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">

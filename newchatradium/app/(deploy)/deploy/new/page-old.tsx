@@ -206,7 +206,7 @@ export default function CreateDeploymentPage() {
       </header>
 
       <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-6 max-w-7xl mx-auto relative">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6 max-w-7xl mx-auto relative">
           {/* Subtle background pattern */}
           <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,_theme(colors.purple.500),transparent_50%)] pointer-events-none" />
           
@@ -219,7 +219,7 @@ export default function CreateDeploymentPage() {
             </div>
 
             {/* Step Navigation */}
-            <div className="space-y-8 relative">
+            <div className="space-y-6 relative">
               {/* Connecting Lines */}
               <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-gradient-to-b from-purple-200 via-purple-300 to-purple-200 dark:from-purple-800 dark:via-purple-700 dark:to-purple-800" />
               
@@ -376,7 +376,7 @@ export default function CreateDeploymentPage() {
                     />
                     <label
                       htmlFor={accelerator.id}
-                      className="flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all duration-200 peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-950/30 hover:border-purple-300 dark:hover:border-purple-700"
+                      className="flex items-center justify-between p-4 md:p-6 border rounded-lg cursor-pointer transition-all duration-200 peer-checked:border-purple-500 peer-checked:bg-purple-50 dark:peer-checked:bg-purple-950/30 hover:border-purple-300 dark:hover:border-purple-700"
                     >
                       <div>
                         <div className="font-medium">{accelerator.name}</div>
@@ -514,7 +514,7 @@ export default function CreateDeploymentPage() {
             </div>
 
             {/* Price Range */}
-            <div className="p-4 bg-muted/50 rounded-lg border">
+            <div className="p-4 md:p-6 bg-muted/50 rounded-lg border">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-medium">Price Range</h4>

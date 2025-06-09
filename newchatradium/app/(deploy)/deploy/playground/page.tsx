@@ -336,7 +336,7 @@ ${messageArray}
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col">
           {/* System Prompt */}
-          <div className="p-4 border-b border-border/40">
+          <div className="p-4 md:p-6 border-b border-border/40">
             <div className="flex items-center justify-between mb-2">
               <Label className="text-sm font-medium text-muted-foreground">System prompt</Label>
               <div className="flex items-center gap-2">
@@ -365,7 +365,7 @@ ${messageArray}
                 </div>
               </div>
             ) : (
-              <div className="p-4 space-y-6">
+              <div className="p-4 md:p-6 space-y-6">
                 {messages.map((message, index) => (
                   <div key={index} className="space-y-2">
                     {message.role !== 'system' && (
@@ -460,7 +460,7 @@ ${messageArray}
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-border/40 bg-background">
+          <div className="p-4 md:p-6 border-t border-border/40 bg-background">
             <div className="relative">
               <Textarea
                 placeholder="Start typing..."
@@ -504,7 +504,7 @@ ${messageArray}
         {/* Right Sidebar - Settings */}
         {showSettings && (
           <div className="w-80 border-l border-border/40 bg-background overflow-auto">
-            <div className="p-4">
+            <div className="p-4 md:p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold">MODEL</h3>
                 <Button 

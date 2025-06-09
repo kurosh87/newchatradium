@@ -153,8 +153,8 @@ export default function ApiKeysPage() {
       header: 'Name',
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-            <Key className="h-4 w-4 text-blue-500" />
+          <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary/20">
+            <Key className="h-4 w-4 text-primary" />
           </div>
           <div>
             <div className="font-medium text-foreground">{row.getValue('name')}</div>
@@ -219,8 +219,8 @@ export default function ApiKeysPage() {
             variant={status === 'active' ? 'default' : 'secondary'}
             className={
               status === 'active' 
-                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
-                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
+                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
             }
           >
             {status}
@@ -247,7 +247,7 @@ export default function ApiKeysPage() {
             </DropdownMenuItem>
             {row.original.status === 'active' && (
               <DropdownMenuItem
-                className="cursor-pointer text-red-600 dark:text-red-400"
+                className="cursor-pointer text-destructive"
                 onClick={() => revokeKey(row.original.id)}
               >
                 Revoke key
@@ -310,7 +310,7 @@ export default function ApiKeysPage() {
                 </div>
                 <Button 
                   onClick={() => setIsCreateDialogOpen(true)}
-                  className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 font-medium"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create API Key
@@ -448,7 +448,7 @@ export default function ApiKeysPage() {
                 <Button 
                   onClick={createNewKey}
                   disabled={!newKeyName}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   Create Key
                 </Button>

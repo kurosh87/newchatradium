@@ -122,8 +122,8 @@ export default function DeploymentsPage() {
       },
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-            <Server className="h-4 w-4 text-purple-500" />
+          <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary/20">
+            <Server className="h-4 w-4 text-primary" />
           </div>
           <div>
             <div className="font-medium text-foreground">{row.getValue('name')}</div>
@@ -140,13 +140,13 @@ export default function DeploymentsPage() {
         const getStatusConfig = (status: string) => {
           switch (status) {
             case 'active':
-              return { color: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300', icon: CheckCircle };
+              return { color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle };
             case 'deploying':
-              return { color: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300', icon: Activity };
+              return { color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300', icon: Activity };
             case 'failed':
-              return { color: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300', icon: AlertCircle };
+              return { color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300', icon: AlertCircle };
             default:
-              return { color: 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300', icon: Clock };
+              return { color: 'bg-muted text-muted-foreground', icon: Clock };
           }
         };
         
@@ -319,7 +319,7 @@ export default function DeploymentsPage() {
                     Model Library
                   </Button>
                   <Button 
-                    className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 font-medium"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
                     onClick={() => router.push('/deploy/new')}
                   >
                     New Deployment

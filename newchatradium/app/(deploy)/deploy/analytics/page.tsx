@@ -152,17 +152,17 @@ export default function AnalyticsPage() {
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList>
-              <TabsTrigger value="analytics" className="bg-blue-500 text-white data-[state=active]:bg-blue-600">
+              <TabsTrigger value="analytics">
                 Analytics
               </TabsTrigger>
-              <TabsTrigger value="monthly" className="text-muted-foreground">
+              <TabsTrigger value="monthly">
                 Monthly Reserved Endpoints
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="analytics" className="space-y-6">
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Requests Chart */}
               <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
@@ -510,7 +510,7 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Bottom Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Models Card */}
               <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">

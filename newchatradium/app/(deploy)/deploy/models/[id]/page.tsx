@@ -233,7 +233,7 @@ export default function ModelDetailsPage() {
             </Card>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-3">
+          <div className="grid gap-4 md:gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
               {/* Features */}
               <Card className="border border-border/60 shadow-sm bg-card/80 backdrop-blur-sm">

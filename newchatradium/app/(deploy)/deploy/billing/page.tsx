@@ -54,7 +54,7 @@ export default function BillingPage() {
             <h1 className="text-2xl font-semibold tracking-tight mb-2">Billing</h1>
             <p className="text-muted-foreground">
               Manage your billing, subscriptions, and payment methods{' '}
-              <Link href="#" className="text-orange-500 hover:text-orange-600 underline">
+              <Link href="#" className="text-primary hover:text-primary/80 underline">
                 Learn more
               </Link>
             </p>
@@ -62,7 +62,7 @@ export default function BillingPage() {
 
           {/* Success message for returning from Stripe */}
           {sessionId && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+            <div className="mb-6 p-4 bg-green-100 border border-green-200 rounded-lg text-green-700 dark:bg-green-900/30 dark:border-green-800/50 dark:text-green-300">
               Payment successful! Your subscription has been activated.
             </div>
           )}
@@ -96,7 +96,7 @@ export default function BillingPage() {
                   Spending limits restrict how much you can spend on the Radium platform per calendar month. The spending limit is determined by your total historical Radium spend. You can purchase prepaid credits to immediately increase your historical spend.
                 </p>
                 <p className="text-muted-foreground mb-4">
-                  <Link href="#" className="text-orange-500 hover:text-orange-600 underline">Visit our FAQ</Link> for answers to common billing questions.
+                  <Link href="#" className="text-primary hover:text-primary/80 underline">Visit our FAQ</Link> for answers to common billing questions.
                 </p>
                 <p className="text-sm text-muted-foreground italic">
                   Note: Credits are counted against your spending limit, so it is possible to hit the spending limit before all of your current credits are depleted.

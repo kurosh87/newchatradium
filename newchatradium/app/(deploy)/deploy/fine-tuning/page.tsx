@@ -139,8 +139,8 @@ const columns = [
     header: 'Fine Tune Jobs',
     cell: info => (
       <div className="flex items-center gap-3">
-        <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-          <Settings className="h-4 w-4 text-purple-500" />
+        <div className="p-2 rounded-lg bg-primary/10 dark:bg-primary/20">
+          <Settings className="h-4 w-4 text-primary" />
         </div>
         <div>
           <span className="font-medium text-foreground">{info.getValue()}</span>
@@ -188,13 +188,13 @@ const columns = [
       const getStatusConfig = (status: string) => {
         switch (status) {
           case 'running':
-            return { color: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300', icon: Activity };
+            return { color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300', icon: Activity };
           case 'completed':
-            return { color: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300', icon: CheckCircle };
+            return { color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle };
           case 'failed':
-            return { color: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300', icon: AlertCircle };
+            return { color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300', icon: AlertCircle };
           default:
-            return { color: 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300', icon: Clock };
+            return { color: 'bg-muted text-muted-foreground', icon: Clock };
         }
       };
       
@@ -209,9 +209,9 @@ const columns = [
           </Badge>
           {status === 'running' && row.progress && (
             <div className="space-y-1">
-              <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+              <div className="w-24 bg-muted rounded-full h-1.5">
                 <div 
-                  className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" 
+                  className="bg-primary h-1.5 rounded-full transition-all duration-300" 
                   style={{width: `${row.progress}%`}}
                 ></div>
               </div>
@@ -257,7 +257,7 @@ const columns = [
               <Edit className="mr-2 h-4 w-4" />
               Edit Settings
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400">
+            <DropdownMenuItem className="cursor-pointer text-destructive">
               <Trash2 className="mr-2 h-4 w-4" />
               Delete Job
             </DropdownMenuItem>
@@ -361,7 +361,7 @@ export default function FineTuningPage() {
                 Getting Started
               </Button>
               <Button 
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 font-medium"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
                 onClick={handleCreateJob}
               >
                 Fine-Tune a Model

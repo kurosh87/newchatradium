@@ -110,9 +110,9 @@ export default function DatasetDetailPage() {
           </div>
 
           {/* Dataset Info Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
             <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
-              <CardContent className="p-4">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center gap-2 mb-2">
                   <Database className="h-4 w-4 text-green-500" />
                   <span className="text-sm font-medium">Examples</span>
@@ -121,7 +121,7 @@ export default function DatasetDetailPage() {
               </CardContent>
             </Card>
             <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
-              <CardContent className="p-4">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium">Size</span>
                 </div>
@@ -129,7 +129,7 @@ export default function DatasetDetailPage() {
               </CardContent>
             </Card>
             <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
-              <CardContent className="p-4">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium">Format</span>
                 </div>
@@ -139,7 +139,7 @@ export default function DatasetDetailPage() {
               </CardContent>
             </Card>
             <Card className="border border-border/60 shadow-sm bg-card/50 backdrop-blur-sm">
-              <CardContent className="p-4">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm font-medium">Status</span>
                 </div>

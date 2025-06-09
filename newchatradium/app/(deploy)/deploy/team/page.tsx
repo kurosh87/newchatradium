@@ -69,7 +69,7 @@ export default function TeamPage() {
       <div className="flex-1 overflow-auto p-4">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Team Overview */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Members</CardTitle>

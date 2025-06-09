@@ -179,7 +179,7 @@ export default function ModelsPage() {
                 Playground
               </Button>
               <Button 
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 font-medium"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
                 onClick={() => router.push('/deploy/new')}
               >
                 Deploy Model
@@ -249,19 +249,19 @@ export default function ModelsPage() {
           {/* Models Display */}
           {viewMode === 'grid' ? (
             /* Grid Layout */
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-4 md:gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredModels.map((model) => (
                 <Card 
                   key={model.id} 
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border border-border/60 bg-white/90 dark:bg-gray-950/90 backdrop-blur-sm group overflow-hidden"
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border border-border/60 bg-card backdrop-blur-sm group overflow-hidden"
                   onClick={() => router.push(`/deploy/models/${model.id}`)}
                 >
                   <CardContent className="p-0">
                     {/* Model Header - matches Fireworks style */}
-                    <div className="p-4 bg-white dark:bg-gray-950 border-b border-border/20">
+                    <div className="p-4 md:p-6 bg-white dark:bg-gray-950 border-b border-border/20">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-border/30">
+                          <div className="p-2 rounded-lg bg-muted border border-border/30">
                             <span className="text-lg">{model.logo}</span>
                           </div>
                           <div>
@@ -279,11 +279,11 @@ export default function ModelsPage() {
                       
                       {/* Pricing - simplified like Fireworks */}
                       <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                        <div className="text-center p-2 bg-slate-50 dark:bg-slate-900 rounded border border-border/20">
+                        <div className="text-center p-2 bg-muted/50 rounded border border-border/20">
                           <div className="font-semibold">{model.pricing.input}</div>
                           <div className="text-muted-foreground font-medium">Input</div>
                         </div>
-                        <div className="text-center p-2 bg-slate-50 dark:bg-slate-900 rounded border border-border/20">
+                        <div className="text-center p-2 bg-muted/50 rounded border border-border/20">
                           <div className="font-semibold">{model.pricing.output}</div>
                           <div className="text-muted-foreground font-medium">Output</div>
                         </div>
@@ -298,14 +298,14 @@ export default function ModelsPage() {
                     </div>
 
                     {/* Model Capabilities - matches Fireworks layout */}
-                    <div className="p-4 space-y-3">
+                    <div className="p-4 md:p-6 space-y-3">
                       {/* Capabilities tags */}
                       <div className="flex flex-wrap gap-1.5">
                         {model.capabilities.map((capability) => (
                           <Badge 
                             key={capability} 
                             variant="secondary" 
-                            className="text-xs px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium border-0"
+                            className="text-xs px-2 py-0.5 bg-muted text-muted-foreground font-medium border-0"
                           >
                             {capability === 'LLM' && <Brain className="h-3 w-3 mr-1" />}
                             {capability === 'Vision' && <Eye className="h-3 w-3 mr-1" />}
@@ -320,11 +320,11 @@ export default function ModelsPage() {
                       {/* Performance Metrics */}
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="flex items-center gap-1.5">
-                          <Zap className="h-3 w-3 text-blue-500" />
+                          <Zap className="h-3 w-3 text-primary" />
                           <span className="text-muted-foreground font-medium">{model.performance.latency}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Activity className="h-3 w-3 text-green-500" />
+                          <Activity className="h-3 w-3 text-green-600" />
                           <span className="text-muted-foreground font-medium">{model.performance.throughput}</span>
                         </div>
                       </div>
@@ -343,7 +343,7 @@ export default function ModelsPage() {
                         </div>
                         <Button 
                           size="sm" 
-                          className="h-7 text-xs font-medium bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
+                          className="h-7 text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90"
                           onClick={(e) => {
                             e.stopPropagation();
                             router.push(`/deploy/new?model=${model.id}`);
@@ -363,7 +363,7 @@ export default function ModelsPage() {
               {filteredModels.map((model) => (
                 <Card 
                   key={model.id}
-                  className="cursor-pointer hover:shadow-md transition-all duration-200 border border-border/60 bg-white/90 dark:bg-gray-950/90 backdrop-blur-sm group"
+                  className="cursor-pointer hover:shadow-md transition-all duration-200 border border-border/60 bg-card backdrop-blur-sm group"
                   onClick={() => router.push(`/deploy/models/${model.id}`)}
                 >
                   <CardContent className="p-4">
@@ -371,7 +371,7 @@ export default function ModelsPage() {
                       <div className="flex items-center gap-4 flex-1">
                         {/* Model Icon and Basic Info */}
                         <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-border/30">
+                          <div className="p-2 rounded-lg bg-muted border border-border/30">
                             <span className="text-lg">{model.logo}</span>
                           </div>
                           <div>
@@ -394,7 +394,7 @@ export default function ModelsPage() {
                             <Badge 
                               key={capability} 
                               variant="secondary" 
-                              className="text-xs px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium border-0"
+                              className="text-xs px-2 py-0.5 bg-muted text-muted-foreground font-medium border-0"
                             >
                               {capability === 'LLM' && <Brain className="h-3 w-3 mr-1" />}
                               {capability === 'Vision' && <Eye className="h-3 w-3 mr-1" />}
@@ -409,11 +409,11 @@ export default function ModelsPage() {
                         {/* Performance and Stats */}
                         <div className="flex items-center gap-6 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <Zap className="h-3 w-3 text-blue-500" />
+                            <Zap className="h-3 w-3 text-primary" />
                             <span className="font-medium">{model.performance.latency}</span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <Activity className="h-3 w-3 text-green-500" />
+                            <Activity className="h-3 w-3 text-green-600" />
                             <span className="font-medium">{model.performance.throughput}</span>
                           </div>
                           <div className="flex items-center gap-1">
@@ -435,7 +435,7 @@ export default function ModelsPage() {
                         </div>
                         <Button 
                           size="sm" 
-                          className="font-medium bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
+                          className="font-medium bg-primary text-primary-foreground hover:bg-primary/90"
                           onClick={(e) => {
                             e.stopPropagation();
                             router.push(`/deploy/new?model=${model.id}`);
